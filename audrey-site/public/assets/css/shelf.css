@@ -1,0 +1,813 @@
+/* ============ Brand content — bookshelf ============
+   Loaded after site.css: reuses .divider-player, .player-placeholder,
+   .player-role, .about-placeholder, .shorts-close, .shorts-hint and the
+   --tile-frame / --chrome-h variables. Book colors come from the admin
+   (--book-bg / --book-text set inline): the theme doesn't touch them, it
+   only changes the board, the shadows and the edge line. */
+:root {
+  --shelf-board: #e8e5dc;
+  --shelf-board-edge: #ffffff;
+  --shelf-shadow: rgba(0, 0, 0, 0.22);
+  --book-shadow: rgba(20, 20, 25, 0.35);
+  --book-line: rgba(0, 0, 0, 0.10);
+  --pages-1: #f1efe8;
+  --pages-2: #dcd9d0;
+  --floor-h: 78px;
+}
+html[data-theme="dark"] {
+  --shelf-board: #1e1e23;
+  --shelf-board-edge: rgba(255, 255, 255, 0.08);
+  --shelf-shadow: rgba(0, 0, 0, 0.7);
+  --book-shadow: rgba(0, 0, 0, 0.65);
+  --book-line: rgba(255, 255, 255, 0.14);
+  --pages-1: #2a2a30;
+  --pages-2: #1b1b1f;
+}
+
+/* ---------- Stage ---------- */
+.shelf-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.shelf-stage {
+  position: absolute;
+  top: var(--chrome-h); left: 0; right: 0; bottom: 0;
+  --hmax: 660px;
+  --split: 0px;
+}
+.shelf-stage.empty .about-placeholder {
+  position: absolute;
+  top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
+/* The board: full width, edge to edge. Below the row in paint order so the
+   books' shadows fall on it. */
+.shelf-board {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(100% - var(--floor-h));
+  height: 10px;
+  background: var(--shelf-board);
+  border-top: 1px solid var(--shelf-board-edge);
+  box-shadow: 0 16px 30px -12px var(--shelf-shadow);
+  transition: background 0.35s ease;
+}
+/* Scrolling container: 24 px top padding for the hover lift, 24 px bottom
+   for the shadows; the books' bottom edge thus lands exactly on the shelf
+   line. */
+.shelf-scroll {
+  position: absolute;
+  z-index: 1;
+  left: 0; right: 0;
+  bottom: calc(var(--floor-h) - 24px);
+  height: calc(var(--hmax) + 48px);
+  padding: 24px 48px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.shelf-scroll::-webkit-scrollbar { display: none; }
+.shelf-scroll.is-overflow {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+/* Book open: the spreading transforms would extend the scrollable area. */
+.shelf-stage.is-open .shelf-scroll { overflow: hidden; }
+.shelf-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  min-width: max-content;
+  --delta: 0px;
+  transform: translateX(var(--delta));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.is-overflow .shelf-row { justify-content: flex-start; }
+
+/* ---------- A book = slot (.book) + look (.spine-body) ----------
+   Two elements, two transforms: the slot carries the width, height and
+   spreading translation; the look carries the color, finish, lean tilt and
+   hover lift. */
+.book {
+  position: relative;
+  flex: none;
+  width: var(--w);
+  height: var(--h);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: var(--cursor-star-link);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Margin on the resting side = projection of the top (--lean, rounded)
+   minus the 4 px flex gap: the top touches the neighbouring spine without
+   overlapping it, leaving a triangle of air at the foot. Leaning right:
+   margin on the right; leaning left: the exact mirror, margin on the left. */
+.book.lean { z-index: 2; }
+.book.lean-r { margin-right: calc(var(--lean) - 4px); }
+.book.lean-l { margin-left: calc(var(--lean) - 4px); }
+.book:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.is-open .book[data-side="l"] { transform: translateX(calc(-1 * var(--split))); }
+.is-open .book[data-side="r"] { transform: translateX(var(--split)); }
+
+/* Base look (no cardboard texture: that's what sets Brand apart from
+   YouTube), then refined by the finish (.fin-cuir / .fin-vernis / .fin-mat).
+   The inner --book-line edge makes a light book readable on the light
+   background. Shared with the spine face of the 3D object. */
+.spine-body,
+.book3d-spine {
+  display: block;
+  background: var(--book-bg);
+  color: var(--book-text);
+  border: 1.5px solid var(--tile-frame);
+  border-radius: 3px 3px 0 0;
+  box-shadow: inset 0 0 0 1px var(--book-line), 0 1px 0 rgba(0, 0, 0, 0.08), 0 14px 22px -14px var(--book-shadow);
+}
+.spine-body {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.24, 1), box-shadow 0.28s ease, opacity 0.25s ease;
+}
+/* Cylindrical spine relief: light on the left, dark on the right. */
+.spine-body::before,
+.book3d-spine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.16), rgba(255, 255, 255, 0.12) 18%, rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, 0.08) 84%, rgba(0, 0, 0, 0.22));
+}
+/* Two rules (binding bands), 12 px from the top and 40 px from the bottom. */
+.spine-body::after,
+.book3d-spine::after {
+  content: '';
+  position: absolute;
+  top: 12px; bottom: 40px; left: 8px; right: 8px;
+  pointer-events: none;
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.3;
+}
+/* Name set vertically, read top to bottom (English-style jacket). No
+   text-transform: a Caveat or Pacifico should be free to express itself. */
+.spine-title {
+  position: absolute;
+  top: 18px; bottom: 48px; left: 50%;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--book-text);
+}
+/* Order number (the admin's) at the foot, horizontal, in mono. */
+.spine-foot {
+  position: absolute;
+  bottom: 12px; left: 0; right: 0;
+  text-align: center;
+  font: 10px/1 'IBM Plex Mono', monospace;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.book.thin .spine-foot { display: none; }
+
+/* ---------- Finishes ----------
+   Three pure-CSS finishes, applied to the spine (shelf and 3D face) and to
+   the open cover, over the client color. Textures are background layers
+   (under the text): no veil over the media. */
+/* Leather: grain (two offset dot patterns), edge vignette, soft central
+   highlight, embossed title. */
+.fin-cuir.spine-body,
+.fin-cuir.book3d-spine,
+.book3d-cover.fin-cuir {
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.075) 0.6px, transparent 1.1px),
+    radial-gradient(rgba(0, 0, 0, 0.11) 0.7px, transparent 1.3px),
+    radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.09), transparent 62%),
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(0, 0, 0, 0.26) 100%);
+  background-size: 3px 3px, 5px 5px, 100% 100%, 100% 100%;
+  background-position: 0 0, 1px 2px, 0 0, 0 0;
+}
+.fin-cuir .spine-title,
+.book3d-cover.fin-cuir .cover-title {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16), 0 -1px 0 rgba(0, 0, 0, 0.42);
+}
+/* Gloss: saturated color, sharp highlight band (vertical on the spine,
+   diagonal on the cover), shiny edge, crisp title. */
+.fin-vernis.spine-body,
+.fin-vernis.book3d-spine,
+.book3d-cover.fin-vernis {
+  filter: saturate(1.35) contrast(1.04);
+  outline: 1px solid rgba(255, 255, 255, 0.5);
+  outline-offset: -3px;
+}
+.fin-vernis.spine-body::before,
+.fin-vernis.book3d-spine::before {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 14%, rgba(255, 255, 255, 0.55) 24%, rgba(255, 255, 255, 0.18) 34%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.16), rgba(255, 255, 255, 0.12) 18%, rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, 0.08) 84%, rgba(0, 0, 0, 0.22));
+}
+.book3d-cover.fin-vernis {
+  background-image: linear-gradient(105deg, rgba(255, 255, 255, 0) 26%, rgba(255, 255, 255, 0.28) 36%, rgba(255, 255, 255, 0.08) 44%, rgba(255, 255, 255, 0) 54%);
+}
+/* Matte: flat color, no highlight (relief reduced to two edge shadows),
+   light paper grain, soft shadow. */
+.fin-mat.spine-body,
+.fin-mat.book3d-spine,
+.book3d-cover.fin-mat {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.02) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 4px);
+}
+.fin-mat.spine-body::before,
+.fin-mat.book3d-spine::before {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0) 78%, rgba(0, 0, 0, 0.12));
+}
+.fin-mat.spine-body {
+  box-shadow: inset 0 0 0 1px var(--book-line), 0 1px 0 rgba(0, 0, 0, 0.05), 0 10px 18px -12px var(--book-shadow);
+}
+
+/* Hover / focus: the book is pulled from the shelf. */
+.book:hover .spine-body,
+.book:focus-visible .spine-body {
+  transform: translateY(-10px);
+  box-shadow: inset 0 0 0 1px var(--book-line), 0 1px 0 rgba(0, 0, 0, 0.08), 0 22px 30px -14px var(--book-shadow);
+}
+/* A right-leaning book pivots on its bottom-right corner: its bottom-left
+   corner lifts, like a real book resting against its neighbour. A
+   left-leaning book is the mirror (bottom-left pivot, negative rotation).
+   Hover composes with it. */
+.book.lean .spine-body { z-index: 2; }
+.book.lean-r .spine-body {
+  transform-origin: 100% 100%;
+  transform: rotate(var(--deg, 8deg));
+}
+.book.lean-l .spine-body {
+  transform-origin: 0 100%;
+  transform: rotate(calc(-1 * var(--deg, 8deg)));
+}
+.book.lean-r:hover .spine-body,
+.book.lean-r:focus-visible .spine-body { transform: rotate(var(--deg, 8deg)) translateY(-10px); }
+.book.lean-l:hover .spine-body,
+.book.lean-l:focus-visible .spine-body { transform: rotate(calc(-1 * var(--deg, 8deg))) translateY(-10px); }
+/* Book taken out: its slot stays visible as a ghost; a leaning book straightens. */
+.book.ghost .spine-body {
+  opacity: 0.25;
+  pointer-events: none;
+  transform: none !important;
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+
+/* ---------- Open book layer (3D flight) ----------
+   .book3d is the cover box (Wc × Hc). The spine face extends from the left
+   edge towards the visitor; at rotateY(90deg) it faces front and the cover
+   is edge-on, at rotateY(0) it's the reverse: a real volume turned towards
+   you. The perspective isn't on this layer but in the book's transform
+   (perspective() in the list, see bookTransform in shelf.js): the vanishing
+   point is the book's edge, so nothing projects to its left during flight. */
+.shelf-open {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  pointer-events: none;
+}
+.book3d {
+  position: absolute;
+  transform-style: preserve-3d;
+  transform-origin: 0 100%;
+  pointer-events: auto;
+  will-change: transform;
+  /* S-curve (not the shelf's "fast" curve): the quarter turn must be
+     visible; halfway through, the cover is still at 45°. */
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+/* Landed: nothing composited in 3D, crisp 2D text, media present. */
+.book3d.settled {
+  transform-style: flat;
+  will-change: auto;
+}
+.book3d.settled .book3d-spine { visibility: hidden; }
+/* Closing: the media area (frame, role label, tabs) fades out in 120 ms
+   while the cover is still; the pivot only starts afterwards
+   (transition-delay set by shelf.js). */
+.book3d.closing .cover-player-wrap,
+.book3d.closing .cover-tabs {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+/* Copy of the spine at its real size (w × h), enlarged by 1/k to fill the
+   height Hc: the geometry of the text, rules and edges is exactly that of
+   the original spine once everything is scaled down by k. The one-pixel
+   translate3d lifts it off the cover plane: the two faces no longer touch at
+   the edge and Chrome sorts them correctly (without it the cover was painted
+   over the spine in flight). */
+.book3d-spine {
+  position: absolute;
+  left: 0; top: 0;
+  transform-origin: 0 0;
+  transform: translate3d(-1px, 0, 1px) rotateY(-90deg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: none;
+  border-radius: 3px 0 0 3px;
+  overflow: hidden;
+}
+.book3d-spine.thin .spine-foot { display: none; }
+/* Cover: square spine on the left with its hinge, rounded fore-edge on the
+   right, stepped page edge (two steps), wide shadow.
+   Padding 20.5 px + border 1.5 px = 22 px from the outer edge.
+   overflow hidden: none of its content goes past its edges, in flight too. */
+.book3d-cover {
+  position: absolute;
+  inset: 0;
+  padding: 20.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  background: var(--book-bg);
+  color: var(--book-text);
+  border: 1.5px solid var(--tile-frame);
+  border-radius: 3px 10px 10px 3px;
+  box-shadow: inset 0 0 0 1px var(--book-line), 4px 4px 0 var(--pages-1), 8px 8px 0 var(--pages-2), 0 40px 70px -30px var(--book-shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.book3d-cover::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 18px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent);
+  pointer-events: none;
+  border-radius: 3px 0 0 3px;
+}
+/* No child shrinks: the media is sized in px by JS from the space the
+   others leave. */
+.book3d-cover > * { flex: none; min-width: 0; }
+.cover-head {
+  min-height: 44px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cover-title {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+.cover-num {
+  flex: none;
+  font: 11px/1 'IBM Plex Mono', monospace;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+}
+/* Project tabs: a single row fused to the video frame's top edge (12 px gap
+   − 15.5 px margin + 2 px bottom padding that holds the inactive tabs'
+   offset = 1.5 px overlap, the stroke width). When they don't fit, the row
+   scrolls (finger, wheel, focus) under a side fade, scrollbar hidden: never a
+   cut-off row or a tab "floating" above another row. The active one is black
+   like the frame: literally merged with the player. */
+.cover-tabs {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  flex-wrap: nowrap;
+  margin-bottom: -15.5px;
+  padding: 0 10px 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.cover-tabs::-webkit-scrollbar { display: none; }
+.cover-tabs.scrolls {
+  padding-left: 24px;
+  padding-right: 24px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+.cover-tab {
+  flex: none;
+  border: 1.5px solid var(--tile-frame);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 7px 14px 9px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: var(--cursor-star-link);
+  color: var(--book-text);
+  background: color-mix(in srgb, var(--book-bg) 82%, #000);
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+  transform: translateY(2px);
+}
+.cover-tab:hover { transform: translateY(1px); }
+.cover-tab:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.cover-tab.active {
+  background: #101013;
+  color: #f2f2ef;
+  transform: none;
+}
+.cover-player-wrap {
+  position: relative;
+  align-self: center;
+  max-width: 100%;
+}
+/* The lower half of the role label overflows below the player. */
+.cover-player-wrap.has-role { margin-bottom: 26px; }
+/* "Screen turns on": the player content fades in. */
+.cover-player > * {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.cover-player.lit > * { opacity: 1; }
+/* Vertical video: a discreet phone-like 9:16 frame (rounded corners, thick
+   bezel, thin inner edge), centered in the media area. */
+.cover-player.portrait {
+  margin: 0 auto;
+  border: 3px solid #000;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.14), 0 14px 28px -14px rgba(0, 0, 0, 0.55);
+}
+.cover-player.portrait iframe,
+.cover-player.portrait video { border-radius: 14px; }
+/* Several 9:16 videos from one client: phones side by side on the bare
+   cover, short caption above each; the row scrolls (and snaps) when it
+   doesn't fit. Auto margins on the first and last center it without cutting
+   off its start when it overflows. */
+.cover-player.phones {
+  aspect-ratio: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: var(--phone-gap, 12px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.cover-player.phones::-webkit-scrollbar { display: none; }
+.phone {
+  flex: none;
+  width: var(--phone-w, 180px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  scroll-snap-align: center;
+}
+.phone:first-child { margin-left: auto; }
+.phone:last-child { margin-right: auto; }
+.phone-cap {
+  margin: 0;
+  max-width: 100%;
+  height: 16px;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--book-text);
+  opacity: 0.85;
+}
+.phone-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background: #101013;
+  border: 3px solid #000;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.14), 0 14px 28px -14px rgba(0, 0, 0, 0.55);
+}
+.phone-frame iframe,
+.phone-frame video { border-radius: 14px; }
+/* Gallery: one photo at a time, whole (contain), no frame or background: a
+   photo that doesn't match the area's format lets the cover show through. */
+.cover-player.gallery {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.cover-gallery {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  cursor: var(--cursor-star-link);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.gal-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.15s ease;
+}
+.gal-img.fading { opacity: 0; }
+.gal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 60px;
+  padding: 0 0 4px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f2f2ef;
+  font: 34px/1 'IBM Plex Mono', monospace;
+  cursor: var(--cursor-star-link);
+  opacity: 0.8;
+  transition: opacity 0.18s ease, background 0.18s ease;
+}
+.gal-prev { left: 10px; }
+.gal-next { right: 10px; }
+.gal-arrow:hover,
+.gal-arrow:focus-visible { opacity: 1; background: rgba(0, 0, 0, 0.72); }
+.gal-arrow:focus-visible { outline: 2px solid #f2f2ef; outline-offset: -3px; }
+/* Nothing left to scroll this way (no photo or text): greyed out, inert. */
+.gal-arrow.off,
+.gal-arrow.off:hover { opacity: 0.28; background: rgba(0, 0, 0, 0.3); cursor: var(--cursor-star); }
+/* Dots and counter at the top: the bottom of the frame belongs to the role label. */
+.gal-foot {
+  position: absolute;
+  top: 10px; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.gal-dots { display: flex; gap: 5px; }
+.gal-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.38);
+  transition: background 0.18s ease;
+}
+.gal-dot.active { background: #ffffff; }
+.gal-count {
+  font: 11px/1 'IBM Plex Mono', monospace;
+  letter-spacing: 0.12em;
+  color: #f2f2ef;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 5px 8px;
+  border-radius: 3px;
+}
+/* Role label: straddling the player's bottom edge, in the book's colors. */
+.book3d .player-role {
+  bottom: 0;
+  font-size: clamp(18px, 2.4vh, 30px);
+  padding: 9px 22px 12px;
+  max-width: calc(100% - 32px);
+  background: var(--book-bg);
+  color: var(--book-text);
+  border-color: var(--tile-frame);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+/* Image on top, text below, like a jacket. The whole text is in the DOM: an
+   area of at most 3 lines (4 on phones) that scrolls — wheel, finger, gallery
+   arrows or ▲ ▼ — one page at a time, smoothly; a fade signals what remains
+   below (.fade-b) or above (.fade-t). Short text takes its natural height:
+   the area doesn't reserve 3 lines for nothing. */
+.cover-text {
+  margin: auto 0 0;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-height: 0;
+}
+.cover-desc {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  max-height: 4.35em;   /* 3 lines: a page step lands on a whole line */
+  opacity: 0.85;
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  touch-action: pan-y;
+}
+.cover-desc::-webkit-scrollbar { display: none; }
+.cover-desc.fade-b {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 1.3em), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 1.3em), transparent);
+}
+.cover-desc.fade-t {
+  -webkit-mask-image: linear-gradient(transparent, #000 1.3em);
+  mask-image: linear-gradient(transparent, #000 1.3em);
+}
+.cover-desc.fade-t.fade-b {
+  -webkit-mask-image: linear-gradient(transparent, #000 1.3em, #000 calc(100% - 1.3em), transparent);
+  mask-image: linear-gradient(transparent, #000 1.3em, #000 calc(100% - 1.3em), transparent);
+}
+/* ▲ ▼ to the right of the text (projects without a gallery, overflowing
+   text): discreet, in the book's color, greyed out when that direction is
+   exhausted. */
+.desc-nav {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.desc-arrow {
+  width: 22px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: inherit;
+  font: 9px/1 'IBM Plex Mono', monospace;
+  opacity: 0.55;
+  cursor: var(--cursor-star-link);
+  transition: opacity 0.18s ease;
+}
+.desc-arrow:hover,
+.desc-arrow:focus-visible { opacity: 1; }
+.desc-arrow:focus-visible { outline: 1.5px solid currentColor; outline-offset: -2px; }
+.desc-arrow.off,
+.desc-arrow.off:hover { opacity: 0.18; cursor: var(--cursor-star); }
+/* display: flex would override the browser's [hidden]. */
+.cover-text[hidden],
+.desc-nav[hidden],
+.gal-arrow[hidden] { display: none; }
+.book3d-cover.tight .cover-text { display: none; }
+/* The project title closes the jacket: at the bottom, under the
+   description if there is one, otherwise alone at the foot. */
+.cover-foot {
+  margin: auto 0 0;
+  font: 11px/1 'IBM Plex Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cover-text + .cover-foot { margin-top: 0; }
+.book3d-cover.tight .cover-foot { margin-top: auto; }
+
+/* Resizing with a book open: everything repositions without animation. */
+.shelf-stage.no-anim .shelf-row,
+.shelf-stage.no-anim .book,
+.shelf-stage.no-anim .spine-body,
+.book3d.no-anim { transition: none !important; }
+
+/* ---------- Phone ---------- */
+@media (max-width: 860px) {
+  :root { --floor-h: 64px; }
+  .shelf-scroll {
+    padding: 24px 16px;
+    overscroll-behavior-x: contain;
+  }
+  .shelf-board { height: 8px; }
+  .shorts-close { top: 108px; right: 16px; }
+  .shorts-hint { font-size: 10px; right: 16px; }
+  .book3d-cover { padding: 14.5px; gap: 10px; }
+  .cover-head { min-height: 30px; }
+  .cover-tab { font-size: 12px; padding: 6px 10px 8px; }
+  .book3d .player-role { font-size: 15px; padding: 7px 14px 9px; }
+  .cover-desc { font-size: 13px; max-height: 5.8em; }   /* 4 lines */
+  .cover-foot { display: none; }
+  .cover-player.portrait { border-width: 2.5px; border-radius: 14px; }
+  .cover-player.portrait iframe,
+  .cover-player.portrait video { border-radius: 11px; }
+  .phone-frame { border-width: 2.5px; border-radius: 14px; }
+  .phone-frame iframe,
+  .phone-frame video { border-radius: 11px; }
+  .phone-cap { font-size: 11px; }
+  /* Gallery arrows at finger size. */
+  .gal-arrow { width: 44px; height: 64px; font-size: 30px; }
+  .gal-prev { left: 6px; }
+  .gal-next { right: 6px; }
+  /* Landscape phone (stage < 300 px): spines 120 to 182 px, no foot or
+     rules, title over the full height; with a book open, the ghost fades
+     (the cover, centered on the stage, doesn't cover it). */
+  .shelf-page.landscape .spine-title { top: 12px; bottom: 12px; }
+  .shelf-page.landscape .spine-foot,
+  .shelf-page.landscape .spine-body::after,
+  .shelf-page.landscape .book3d-spine::after { display: none; }
+  .shelf-page.landscape .is-open .book.ghost .spine-body { opacity: 0; }
+
+  /* ---- Tiers (portrait phone; .tiers set by shelf.js) ----
+     The page becomes a flow again: tiers (.shelf-tier = row + board) stack
+     at the bottom of the stage, top to bottom; if there are more than fit on
+     screen the page scrolls, the header stays (pinned, opaque background)
+     and the hint follows the end of the last shelf. Same values as shelf.js:
+     16 px margins, 16 px air above / 22 px below, 8 px board, 64 px footer
+     (22 + hint 42). */
+  .shelf-page.tiers {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+  .shelf-page.tiers .shelf-stage {
+    position: static;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: var(--chrome-h);
+  }
+  .shelf-page.tiers .shelf-stage > .shelf-board { display: none; }
+  .shelf-page.tiers .shelf-scroll {
+    position: static;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* Each tier clips its spread books (never horizontal document scrolling);
+     the top air holds the hover lift, the bottom air the shadows. */
+  .shelf-tier {
+    position: relative;
+    overflow: hidden;
+    padding: 16px 16px 22px;
+  }
+  .shelf-tier .shelf-row {
+    height: var(--hmax);
+    min-width: 0;
+    justify-content: center;
+  }
+  .shelf-tier .shelf-board {
+    position: relative;
+    top: auto;
+    margin: 0 -16px;
+    height: 8px;
+  }
+  .shelf-page.tiers .shorts-hint {
+    position: static;
+    flex: none;
+    margin: 0;
+    padding: 8px 16px 22px;
+    text-align: right;
+  }
+  body.shelf-tiers .site-header {
+    position: fixed;
+    background: var(--bg);
+    transition: background 0.35s ease;
+  }
+}
+
+/* ---------- Reduced motion: everything is instant except fades ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .shelf-row, .book, .spine-body, .cover-tab { transition-duration: 1ms !important; }
+  .book3d { transition: transform 1ms linear, opacity 0.2s ease !important; }
+  .book.ghost .spine-body, .cover-player > * { transition: opacity 0.2s ease !important; }
+  .gal-img { transition: none !important; }
+  .cover-desc { scroll-behavior: auto; }
+}

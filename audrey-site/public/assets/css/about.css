@@ -1,0 +1,1027 @@
+/* ============ About me — the kraft folder ============
+   A single object: a card folder opened flat, seen from above. On the left a
+   stack of prints clipped in a perforated frame, on the right four tabbed
+   cards stacked in steps (the red one holds the "content creation" hub), at
+   the bottom the "How I ♥ to work" post-it. The --type / --mono / --hand
+   fonts are overridden inline by about.js when the admin picks one.
+   The .about-root / .about-placeholder block in site.css stays (the
+   placeholder is also used by shorts.js and dividers.js): this sheet
+   overrides it. */
+
+.about-root {
+  /* materials */
+  --kraft-shade: rgba(120, 80, 30, .10);   /* veil over carton-2 */
+  --kraft-back:  rgba(60, 40, 15, .22);    /* back flap, darker */
+  --kraft-flat:  #cfae7c;                  /* solid color of the perforation holes */
+  --paper:       #f7f3ea;                  /* "description" card, label, photo mat */
+  --paper-grid:  #eef1ec;                  /* "cv" card (grid) */
+  --paper-sage:  #e6ead6;                  /* "hobbies" card (ruled) */
+  --paper-blue:  #e3ebf2;                  /* "education" card (notebook) */
+  --paper-red:   #c9463d;                  /* "content creation" card */
+  --postit:      #f5df7a;                  /* "how I ♥ to work" card */
+  --ink-paper:   #23201c;                  /* text on paper, theme-independent */
+  --ink-red:     #c8342c;                  /* handwritten note, stamp, rules */
+  --cream:       #f7f0e4;                  /* text on the red card */
+  --rule:        rgba(60, 90, 150, .16);   /* lines / grid */
+  --shadow-k:    .42;                      /* drop shadow intensity */
+  --type: 'Special Elite', 'Courier New', Courier, monospace;   /* typewriter */
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;            /* body text */
+  --hand: 'Caveat', 'Segoe Script', cursive;                    /* handwriting */
+  /* Photo frame height: 410 px at 1440 × 900; on a shorter window the folder
+     loses height (§5) and the frame follows, so the note and post-it keep
+     their place below (266 px at the shortest). Fixed default value: a
+     variable invalid at computed-value time would set the height to auto. */
+  --frame-h: 410px;
+
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: calc(var(--chrome-h) + 22px) 40px 30px;
+  overflow-x: clip;
+}
+.about-placeholder { align-self: center; }
+
+/* The container only knows its size: the folder and its back flap are
+   absolutely positioned inside. At 1440 × 900: 1240 × 744, the page doesn't
+   scroll. */
+.folder-wrap {
+  position: relative;
+  width: min(1240px, 100%);
+  height: max(600px, min(744px, 100vh - var(--chrome-h) - 52px));
+  height: max(600px, min(744px, 100svh - var(--chrome-h) - 52px));
+}
+@supports (height: 1svh) {
+  .about-root { --frame-h: clamp(266px, calc(100svh - 482px), 410px); }
+}
+.folder-wrap[hidden] { display: none; }
+.about-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.folder-back {
+  position: absolute;
+  inset: 8px -12px -8px -12px;
+  z-index: 0;
+  border-radius: 8px;
+  background: linear-gradient(var(--kraft-back), var(--kraft-back)), url(../img/carton-2.jpg);
+  background-size: 100% 100%, 260px 260px;
+  box-shadow: 0 24px 50px -24px rgba(20, 15, 5, var(--shadow-k));
+  transform: rotate(-.5deg);
+}
+.folder {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 42px 44px 40px;
+  display: grid;
+  grid-template-columns: 440px minmax(0, 1fr);
+  gap: 36px;
+  border-radius: 6px;
+  background: url(../img/carton-2.jpg) 0 0 / 260px 260px;
+  box-shadow: 0 30px 60px -28px rgba(20, 15, 5, var(--shadow-k)), 0 2px 4px rgba(0, 0, 0, .14), inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+/* The tinted veil is a pseudo-element (not a gradient in background): the
+   texture stays exactly the same in both themes, only the veil changes.
+   Negative z-index = above the background, below all content. */
+.folder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--kraft-shade);
+  pointer-events: none;
+}
+/* Folder crease, between the two columns. */
+.folder::before {
+  content: '';
+  position: absolute;
+  left: 500px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .18), rgba(0, 0, 0, .08));
+  pointer-events: none;
+}
+
+/* Side tab with vertical name. */
+.folder-side {
+  position: absolute;
+  right: -34px;
+  top: 130px;
+  width: 34px;
+  height: 280px;
+  z-index: 1;
+  padding: 10px 0;
+  background: linear-gradient(rgba(60, 40, 15, .18), rgba(60, 40, 15, .18)), url(../img/carton-2.jpg);
+  background-size: 100% 100%, 260px 260px;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 3px 2px 6px rgba(0, 0, 0, .16);
+  writing-mode: vertical-rl;
+  font: 13px/34px var(--type);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink-paper);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Clips (symbols #ab-bulldog*, #ab-binder), never animated (static
+   drop-shadow). `color` = metal color (currentColor in the symbol): colored
+   objects, identical in both themes. */
+.clip {
+  position: absolute;
+  overflow: visible;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .35));
+  pointer-events: none;
+}
+/* Large gold bulldog: 96 × 72 "meet" in 200 × 96 → 128 × 96 visible, the
+   tab above the folder edge, the mouth 68 px inside. */
+.folder-clamp {
+  left: 50%;
+  top: -28px;
+  width: 200px;
+  height: 96px;
+  z-index: 6;
+  color: #d8a93c;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .35));
+}
+
+/* Typed label, taped on. */
+.folder-label {
+  position: absolute;
+  left: 40px;
+  top: 12px;
+  width: 300px;
+  min-height: 58px;
+  z-index: 5;
+  padding: 9px 14px 8px;
+  background: var(--paper);
+  border: 1px solid #d9d2c2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+  color: var(--ink-paper);
+  transform: rotate(-1.2deg);
+}
+.label-name {
+  margin: 0;
+  font: 17px/1.25 var(--type);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.label-title {
+  margin: 3px 0 0;
+  font: 10.5px/1.4 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #6d675c;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tape {
+  position: absolute;
+  width: 90px;
+  height: 22px;
+  background: rgba(255, 250, 225, .55);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+  clip-path: polygon(0 0, 100% 0, 97% 25%, 100% 50%, 97% 75%, 100% 100%, 0 100%, 3% 75%, 0 50%, 3% 25%);
+  pointer-events: none;
+}
+.folder-label .tape { top: -10px; left: 50%; transform: translateX(-50%) rotate(-3deg); }
+
+/* ---- Left column: photo, stamp, note, post-it ---- */
+.col-left { position: relative; }
+
+.photo-frame {
+  position: absolute;
+  left: 20px;
+  top: 36px;
+  /* Always square: width follows height, whatever the window. */
+  width: var(--frame-h);
+  height: var(--frame-h);
+  margin: 0;
+  z-index: 2;
+  background: #efe8d8;
+  border-radius: 3px;
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .5), 0 1px 2px rgba(0, 0, 0, .15);
+  transform: rotate(-1.5deg);
+  transition: transform .4s ease;
+}
+.photo-frame:hover { transform: rotate(-.5deg); }
+/* Perforations: four rows of holes (one radial gradient per edge), no
+   mask. `space` spreads the holes and makes the corner ones coincide. */
+.photo-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, var(--kraft-flat) 0 2.6px, rgba(0, 0, 0, .22) 2.8px 3.4px, transparent 3.9px) 0 0 / 16px 16px space no-repeat,
+    radial-gradient(circle, var(--kraft-flat) 0 2.6px, rgba(0, 0, 0, .22) 2.8px 3.4px, transparent 3.9px) 0 100% / 16px 16px space no-repeat,
+    radial-gradient(circle, var(--kraft-flat) 0 2.6px, rgba(0, 0, 0, .22) 2.8px 3.4px, transparent 3.9px) 0 0 / 16px 16px no-repeat space,
+    radial-gradient(circle, var(--kraft-flat) 0 2.6px, rgba(0, 0, 0, .22) 2.8px 3.4px, transparent 3.9px) 100% 0 / 16px 16px no-repeat space;
+}
+/* The print stack fills the whole frame; each print is absolutely
+   positioned in the mat's 24 px margin. Position in the stack = class pos-0
+   (front), pos-1, pos-2 (visible behind, offset and rotated), pos-back (the
+   rest, hidden). --to = resting transform, reused by the "print goes to the
+   back" animation as its end point. */
+.photo-stack {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  outline: none;
+  touch-action: pan-y;
+}
+.photo-stack.is-pile { cursor: var(--cursor-star-link); }
+.photo-stack:focus-visible { box-shadow: 0 0 0 3px var(--ink-red); }
+.photo-print {
+  --to: rotate(2deg);
+  --op: 1;
+  position: absolute;
+  /* Print at its largest: just the perforation strip around it. */
+  inset: 20px 20px 24px;
+  padding: 7px;
+  background: #fff;
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .45);
+  transform: var(--to);
+  transition: transform .4s cubic-bezier(.22, .8, .2, 1), opacity .4s;
+}
+.photo-print.pos-0 { z-index: 3; }
+.photo-print.pos-1 { --to: translate(7px, 5px) rotate(-3deg); z-index: 2; }
+.photo-print.pos-2 { --to: translate(-6px, 9px) rotate(4.5deg); z-index: 1; }
+.photo-print.pos-back { --to: translate(0, 7px); --op: 0; z-index: 0; opacity: var(--op); }
+/* The top print slides right while rotating, passes under the stack
+   halfway (z-index) and lands in its new place; if it joins the hidden
+   prints (--op: 0), it only fades once underneath. */
+@keyframes abPrintOut {
+  0%   { transform: rotate(2deg); z-index: 4; opacity: 1; }
+  48%  { transform: translate(58%, 4%) rotate(9deg) scale(.96); z-index: 4; }
+  52%  { z-index: 0; }
+  60%  { opacity: 1; }
+  100% { transform: var(--to); z-index: 0; opacity: var(--op, 1); }
+}
+.photo-print.leaving {
+  animation: abPrintOut .42s cubic-bezier(.3, .7, .3, 1) both;
+  will-change: transform;
+}
+/* Pagination dots: on the mat's bottom strip, between the print (24 px) and
+   the row of holes (centered 8 px from the edge). */
+.photo-dots {
+  position: absolute;
+  left: 20px;
+  top: calc(36px + var(--frame-h) - 22px);
+  width: var(--frame-h);
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.photo-dots .dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(60, 40, 15, .3);
+  cursor: var(--cursor-star-link);
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.photo-dots .dot.is-on { background: var(--ink-red); }
+.photo-dots .dot:focus-visible { outline: 2px solid var(--ink-red); outline-offset: 2px; }
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  pointer-events: none;
+}
+.photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  background: #d9d5cb;
+  color: #6d675c;
+  font: 11px/1.5 var(--type);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+/* Mint-green logo bulldog: its face (y 40–68) overlaps the top edge of the
+   print, which starts at 24 px. */
+/* Clip on the frame's top edge, shifted right (between the label and the
+   stamp) and raised: its jaw only bites the print's white margin, never the
+   photo. */
+.clip-photo {
+  left: 72%;
+  top: -34px;
+  width: 77px;
+  height: 58px;
+  z-index: 6;
+  color: #93d3b6;
+  transform: translateX(-50%);
+}
+
+/* Fixed 11 px size, readable (the spec): an 11-letter word like
+   "CONFIDENTIAL" is ~79 px and fits whole in the disc's 80 free px with no
+   letter-spacing; a longer word wraps onto two lines rather than shrinking. */
+.stamp {
+  position: absolute;
+  left: 350px;
+  top: 0;
+  width: 90px;
+  height: 90px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 50%;
+  background: var(--ink-red);
+  color: #fff;
+  font: 11px/1.15 var(--type);
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: center;
+  overflow: hidden;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .25);
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+.stamp::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, .7);
+}
+
+/* Handwritten note under the frame: up to three lines (80 characters always
+   fit), and above the post-it in the stacking order so no typed word
+   disappears beneath it. */
+.note {
+  position: absolute;
+  right: 28px;
+  top: calc(var(--frame-h) + 36px);
+  max-width: 300px;
+  margin: 0;
+  z-index: 3;
+  text-align: right;
+  font: 22px/1.1 var(--hand);
+  color: var(--ink-red);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transform: rotate(-4deg);
+}
+
+/* The post-it is a child of .folder (after the stack in the DOM: on phones
+   it comes after the cards), absolutely positioned under the note: when its
+   text grows it extends downwards, into the folder margin, never back up over
+   it. Its top (--frame-h + 156 px, i.e. 566 px at 1440 × 900) leaves room for
+   a three-line note. */
+.how-card {
+  position: absolute;
+  left: 60px;
+  /* --how-gap: set by about.js (fitFrame) — under the note if there is one,
+     26 px under the frame otherwise; 156 px by default (three-line note). */
+  top: calc(var(--frame-h) + var(--how-gap, 156px));
+  width: 300px;
+  min-height: 150px;
+  max-height: 160px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  background: linear-gradient(#ecd15f 0 12px, var(--postit) 12px);
+  box-shadow: 0 8px 16px -10px rgba(0, 0, 0, .4);
+  color: var(--ink-paper);
+  transform: rotate(4deg);
+  transition: transform .4s ease;
+}
+.how-card:hover { transform: rotate(2.5deg); }
+.how-card .tape { top: -9px; left: 26px; transform: rotate(-8deg); }
+.how-title {
+  flex-shrink: 0;
+  margin: 0 0 8px;
+  font: 700 26px/1 var(--hand);
+}
+.how-heart {
+  width: 20px;
+  height: 18px;
+  fill: var(--ink-red);
+  vertical-align: -3px;
+}
+.how-text {
+  min-height: 0;
+  overflow: hidden;
+  font: 12.5px/1.45 var(--mono);
+}
+.how-text p, .how-text ul, .how-text .dated { margin: 0 0 6px; }
+.how-text ul { padding-left: 16px; }
+.how-text.scrolls {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 18px), transparent);
+}
+/* Clickable post-it: opened large in a fixed layer to read the whole text;
+   the small one stays put (the copy avoids any layout jump). */
+.how-card[role="button"] { cursor: var(--cursor-star-link); }
+.how-card[role="button"]:focus-visible { outline: 2px solid var(--ink-red); outline-offset: 4px; }
+.how-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.how-overlay.in { opacity: 1; }
+.how-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 15, 5, .38);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.how-card.how-big {
+  position: relative;
+  left: auto; top: auto;
+  width: min(560px, 92vw);
+  min-height: 0;
+  max-height: min(80vh, 660px);
+  padding: 28px 32px 28px;
+  transform: rotate(-1.5deg) scale(.92);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .55), 0 2px 6px rgba(0, 0, 0, .2);
+  cursor: var(--cursor-star);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+.how-overlay.in .how-card.how-big { transform: rotate(-1.5deg) scale(1); }
+.how-card.how-big:hover { transform: rotate(-1.5deg) scale(1); }
+.how-card.how-big .how-title { font-size: 36px; margin-bottom: 14px; }
+.how-card.how-big .how-heart { width: 28px; height: 25px; vertical-align: -4px; }
+.how-card.how-big .how-text {
+  overflow: auto;
+  padding-right: 8px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  -webkit-mask-image: none;
+  mask-image: none;
+  scrollbar-width: thin;
+}
+.how-card.how-big .tape { left: 50%; transform: translateX(-50%) rotate(-3deg); width: 110px; }
+.how-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 32px; height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .08);
+  color: var(--ink-paper);
+  font: 15px/1 var(--mono);
+  cursor: var(--cursor-star-link);
+}
+.how-close:hover, .how-close:focus-visible { background: rgba(0, 0, 0, .18); outline: none; }
+@media (max-width: 1000px) {
+  .how-card.how-big { width: 92vw; padding: 22px 18px 22px; }
+  .how-card.how-big .how-title { font-size: 30px; }
+  .how-card.how-big .how-text { font-size: 15px; overflow: auto; }
+}
+/* Stickers: children of the post-it, they follow it on every screen. */
+.sticker {
+  position: absolute;
+  overflow: visible;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 6;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .28));
+  pointer-events: none;
+}
+.sticker-heart { top: -18px; right: -18px; width: 56px; height: 52px; fill: #D63F64; transform: rotate(14deg); }
+.sticker-star  { right: -74px; bottom: -8px; width: 64px; height: 64px; fill: #F3D163; transform: rotate(-10deg); }
+
+/* ---- Card stack ---- */
+.stack { position: relative; isolation: isolate; }
+.tabs { position: absolute; inset: 0; margin: 0; padding: 0; pointer-events: none; }
+.tab {
+  position: absolute;
+  top: 120px;
+  height: 41px;                 /* overlaps the card by 1 px: no gap */
+  width: 19.2%;
+  margin: 0;
+  padding: 0 6px;
+  pointer-events: auto;
+  border: 1px solid rgba(0, 0, 0, .09);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--paper);
+  color: var(--ink-paper);
+  font: 12px/1 var(--type);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-align: center;
+  line-height: 1.15;
+  overflow: hidden;
+  cursor: var(--cursor-star-link);
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, .08);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.tab[data-key="desc"]    { left: 0; }
+.tab[data-key="cv"]      { left: 20.2%; background: var(--paper-grid); }
+.tab[data-key="edu"]     { left: 40.4%; background: var(--paper-blue); }
+.tab[data-key="hobbies"] { left: 60.6%; background: var(--paper-sage); }
+.tab[data-key="content"] { left: 80.8%; background: var(--paper-red); color: var(--cream); }
+.tab:not([data-depth="0"]) { filter: brightness(.96); }
+.tab:focus-visible { outline: 2px solid var(--ink-red); outline-offset: 3px; }
+
+.card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 160px;
+  bottom: 0;
+  border: 1px solid rgba(0, 0, 0, .07);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink-paper);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .14);
+}
+.card:not(.is-front) { cursor: var(--cursor-star-link); }
+/* The front card's drop shadow lives on a pseudo-element: only its opacity
+   is animated, never the shadow itself. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 22px 40px -18px rgba(20, 15, 5, var(--shadow-k));
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+}
+.card.is-front::after { opacity: 1; }
+.card[data-key="desc"] {
+  background: linear-gradient(90deg, transparent 24px, rgba(200, 52, 44, .35) 24px 25px, transparent 25px), var(--paper);
+}
+.card[data-key="cv"] {
+  background:
+    linear-gradient(var(--rule) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--paper-grid);
+}
+.card[data-key="edu"] {
+  background:
+    linear-gradient(90deg, transparent 30px, rgba(200, 52, 44, .3) 30px 31px, transparent 31px),
+    repeating-linear-gradient(transparent 0 25px, rgba(60, 100, 150, .18) 25px 26px),
+    var(--paper-blue);
+}
+.card[data-key="hobbies"] { background: var(--paper-sage); }
+.card[data-key="hobbies"] .card-text { background: repeating-linear-gradient(transparent 0 25px, var(--rule) 25px 26px); }
+.card[data-key="hobbies"] .card-text p,
+.card[data-key="hobbies"] .card-text ul { margin-bottom: 26px; }   /* stays aligned with the lines */
+.card[data-key="content"] {
+  background: var(--paper-red);
+  color: var(--cream);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .14), inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+.card[data-key="content"] .card-title::after { background: var(--cream); }
+
+.card-body {
+  position: absolute;
+  inset: 0;
+  padding: 30px 36px 28px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  transition: opacity .22s;
+}
+.card:not(.is-front) .card-body { opacity: 0; }
+.card-body.scrolls {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 30px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 30px), transparent);
+}
+.card-title {
+  position: relative;
+  height: 40px;
+  margin: 0 0 12px;
+  font: 20px/40px var(--type);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 48px;
+  height: 2px;
+  background: var(--ink-red);
+}
+.card-text {
+  max-width: 62ch;
+  font: 14.5px/26px var(--mono);
+  overflow-wrap: anywhere;
+}
+.card-text p { margin: 0 0 14px; }
+.card-text ul { margin: 0 0 14px; padding-left: 20px; }
+.card-text li { margin: 0; }
+.dated { display: grid; grid-template-columns: 118px 1fr; gap: 0 14px; }
+.dated-when { font-family: var(--type); font-size: 13.5px; letter-spacing: .02em; }
+.card-empty { font-style: italic; opacity: .6; }
+
+/* ---- "Content creation" hub (red card): handle, platforms, tiles ---- */
+.hub { margin-top: 2px; }
+.hub-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin: 0 0 18px;
+}
+.hub-handle {
+  margin: 0;
+  font: 700 38px/1 var(--hand);
+  letter-spacing: .01em;
+  overflow-wrap: anywhere;
+}
+.hub-platforms { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.hub-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 66px;
+  padding: 8px 8px 6px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  text-align: center;
+  transition: background .2s, transform .2s;
+}
+a.hub-chip:hover { background: rgba(255, 255, 255, .12); transform: translateY(-2px); }
+a.hub-chip:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.hub-icon { width: 22px; height: 22px; fill: currentColor; }
+.hub-count { font: 700 13px/1.1 var(--type); }
+.hub-count span {
+  display: block;
+  margin-top: 2px;
+  font: 9.5px/1.2 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .8;
+}
+.hub-section { margin: 0 0 20px; }
+.hub-section h3 {
+  margin: 0 0 8px;
+  font: 13px/1.2 var(--type);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+.hub-grid { display: grid; gap: 10px; }
+.hub-videos .hub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hub-photos .hub-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hub-collab .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Fixed-ratio tiles (height pseudo-element): 9:16, square, 16:9. */
+.hub-tile, .hub-photo {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .18);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .22);
+  color: inherit;
+}
+.hub-tile::before, .hub-photo::before { content: ''; display: block; padding-top: 56.25%; }
+.hub-tile.tile-9x16::before { padding-top: 177.78%; }
+.hub-photo::before { padding-top: 100%; }
+.hub-tile .thumb, .hub-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hub-photo.is-broken img { display: none; }
+a.hub-tile, a.hub-photo { transition: transform .2s ease; }
+a.hub-tile:hover, a.hub-photo:hover { transform: translateY(-2px); }
+a.hub-tile:focus-visible, a.hub-photo:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.hub-tile .tile-label { font-family: var(--type); }
+.hub-tile:hover .tile-label, .hub-tile:focus-visible .tile-label { opacity: 1; transform: none; }
+.hub-badge {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* Red binder clip on the left edge of the front card: rotated −90°, its arms
+   point out of the card, the back (y 27–37 in the symbol) rests on the edge,
+   the mouth bites 25 px into the card. Center at (4 px, 62 px). */
+.clip-edge {
+  left: -28px;
+  top: 30px;
+  width: 64px;
+  height: 64px;
+  color: #c8342c;
+  transform: rotate(-90deg);
+  opacity: 0;
+  transition: opacity .25s .25s;
+}
+.card.is-front .clip-edge { opacity: 1; }
+/* Small yellow polka-dot bulldog on top of the CV card (instead of the paper clip). */
+.clip-cv {
+  right: 44px;
+  top: -14px;
+  width: 60px;
+  height: 45px;
+  color: #f0c344;
+  transform: rotate(3deg);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .3));
+}
+
+/* ---- Depth: carried by the card AND its tab ---- */
+.stack [data-depth="0"] { transform: none;                    z-index: 5; }
+.stack [data-depth="1"] { transform: translate(4px, -30px);   z-index: 4; }
+.stack [data-depth="2"] { transform: translate(8px, -60px);   z-index: 3; }
+.stack [data-depth="3"] { transform: translate(12px, -90px);  z-index: 2; }
+.stack [data-depth="4"] { transform: translate(16px, -120px); z-index: 1; }
+.card, .tab { transition: transform .38s cubic-bezier(.22, .8, .2, 1); }
+.card-body, .card-body.scrolls { transition: opacity .22s; }
+/* Hover (class set by about.js on the tab and its card together): 4 px lift. */
+.stack .raised[data-depth="0"] { transform: translate(0, -4px);     transition-duration: .15s; }
+.stack .raised[data-depth="1"] { transform: translate(4px, -34px);  transition-duration: .15s; }
+.stack .raised[data-depth="2"] { transform: translate(8px, -64px);  transition-duration: .15s; }
+.stack .raised[data-depth="3"] { transform: translate(12px, -94px); transition-duration: .15s; }
+.stack .raised[data-depth="4"] { transform: translate(16px, -124px); transition-duration: .15s; }
+
+/* ---- Entrance ---- */
+@keyframes abFolderIn { from { opacity: 0; transform: translateY(26px); } }
+@keyframes abDealIn   { from { opacity: 0; transform: translateY(-34px); } }
+@keyframes abPopIn    { from { opacity: 0; transform: scale(.6); } }
+.about-in .folder, .about-in .folder-back { animation: abFolderIn .55s cubic-bezier(.2, .75, .25, 1) both; }
+.about-in .card, .about-in .tab { animation: abDealIn .5s cubic-bezier(.2, .75, .25, 1) both; }
+.about-in [data-depth="4"] { animation-delay: .05s; }
+.about-in [data-depth="3"] { animation-delay: .12s; }
+.about-in [data-depth="2"] { animation-delay: .19s; }
+.about-in [data-depth="1"] { animation-delay: .26s; }
+.about-in [data-depth="0"] { animation-delay: .33s; }
+.about-in .photo-frame { animation: abPopIn .55s cubic-bezier(.34, 1.3, .64, 1) .42s both; }
+.about-in .how-card    { animation: abPopIn .5s  cubic-bezier(.34, 1.3, .64, 1) .56s both; }
+.about-in .sticker-heart { animation: abPopIn .5s cubic-bezier(.34, 1.3, .64, 1) .68s both; }
+.about-in .sticker-star  { animation: abPopIn .5s cubic-bezier(.34, 1.3, .64, 1) .78s both; }
+
+/* ---- "Pulling the card out": it lifts above the stack, rises with a
+   slight turn, then settles in front (transform: none = rest). ---- */
+@keyframes ficheLift {
+  0%   { transform: translate(var(--x0), var(--y0)); }
+  45%  { transform: translate(calc(var(--x0) / 2), calc(var(--y0) / 2 - 22px)) rotate(-1.1deg) scale(1.015); }
+  100% { transform: none; }
+}
+.card.lifting, .tab.lifting {
+  z-index: 20;
+  animation: ficheLift .46s cubic-bezier(.22, .8, .2, 1) both;
+  animation-delay: 0s;
+  will-change: transform;
+}
+.card.lifting::after { opacity: 1; }
+
+/* ============ Dark theme: a light object on a dark desk ============ */
+html[data-theme="dark"] .about-root {
+  --kraft-shade: rgba(40, 25, 5, .26);
+  --kraft-back:  rgba(20, 12, 2, .40);
+  --kraft-flat:  #a98a5e;
+  --paper: #efe9dc;
+  --paper-grid: #e6e9e3;
+  --paper-sage: #dde2cc;
+  --postit: #ecd66f;
+  --shadow-k: .85;
+}
+html[data-theme="dark"] .folder {
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .85), 0 2px 4px rgba(0, 0, 0, .4), inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+html[data-theme="dark"] .photo-empty { background: #3a3630; color: #bdb6a8; }
+
+/* ============ Narrow desktop (1001–1200 px: landscape iPad, small laptops) ============
+   The left column gives 120 px to the stack so all four tabs stay whole: the
+   longest tab label is 111 px at 11 px; at 1001 px the stack is 513 px and
+   each tab 123 px. The stamp bites the corner of the label (as on phones)
+   instead of floating between the two columns. */
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .about-root { --frame-h: 300px; }
+  .folder { padding: 42px 32px 40px; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; }
+  .folder::before { left: 364px; }
+  .folder-label { width: 260px; }
+  .photo-frame { left: 10px; }
+  .photo-dots { left: 10px; width: var(--frame-h); }
+  .stamp { left: 250px; z-index: 6; }
+  .note { right: 20px; max-width: 280px; }
+  .how-card { left: 40px; width: 260px; }
+}
+/* Tabs at 11 px with no letter-spacing up to 1300 px: at 12 px the longest
+   label is 130 px and the tab (24% of the stack) only reaches that beyond a
+   ≈ 1270 px window — it was ellipsized between 1201 and 1270 px. At 1001 px
+   (513 px stack), the tab is 123 px for 111 px of text. */
+@media (min-width: 1001px) and (max-width: 1300px) {
+  .tab { padding: 0 5px; font-size: 11px; letter-spacing: 0; }
+}
+@supports (height: 1svh) {
+  @media (min-width: 1001px) and (max-width: 1200px) {
+    .about-root { --frame-h: clamp(266px, calc(100svh - 482px), 360px); }
+  }
+}
+
+/* ============ Phone and tablet ============
+   Below 1001 px (the stack would no longer fit four readable tabs), the
+   folder becomes a vertical sheet in the flow: the page scrolls, and the tabs
+   form a 2 × 2 grid above the single card shown. The sheet is capped at
+   640 px: on tablets it stays a folder, not a banner. Width alone decides
+   (about.js: phoneQuery, keep in sync): a wide but short window — MacBook
+   with the Safari bar, ≈ 1280 × 620 — keeps the desktop layout, whose folder
+   is capped at 600 px tall (.folder-wrap) and frame at 266 px (--frame-h);
+   beyond that the page scrolls. */
+@media (max-width: 1000px) {
+  .about-root { padding: calc(var(--chrome-h) + 8px) 12px 40px; }
+  .folder-wrap { width: 100%; max-width: 640px; height: auto; }
+  .folder {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px 30px;
+  }
+  .folder-back { inset: 6px -6px -6px -6px; }
+  .folder-side, .folder::before { display: none; }
+  /* Smaller clip (80 × 60 visible): its mouth stops at 30 px, flush with the
+     label text (20 px margin + 9 px padding). */
+  .folder-clamp { width: 130px; height: 60px; top: -30px; }
+  .folder-label {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    margin: 0 0 12px;
+    padding-right: 70px;
+    transform: none;
+  }
+  /* col-left is no longer positioned: the stamp sits on the folder's corner,
+     over the end of the label. */
+  .col-left { position: static; display: flex; flex-direction: column; }
+  /* 72 px (not 64): at 8.5 px — the spec's phone size — an 11-letter word
+     like "CONFIDENTIAL" is ~61 px and needs 64 free px to stay whole. */
+  .stamp {
+    left: auto;
+    top: 6px;
+    right: 8px;
+    width: 72px;
+    height: 72px;
+    z-index: 6;               /* over the end of the label */
+    padding: 4px;
+    font-size: 8.5px;
+  }
+  .photo-frame, .note, .how-card { position: relative; left: auto; top: auto; right: auto; bottom: auto; }
+  /* Square frame (not a 340 px banner on a wide sheet): 440 px max, centered
+     beyond that. */
+  .photo-frame { width: 100%; max-width: 440px; height: 340px; margin: 6px auto 12px; }
+  @supports (aspect-ratio: 1) { .photo-frame { height: auto; aspect-ratio: 1; } }
+  .photo-print { inset: 18px; padding: 8px; }
+  .photo-dots { position: static; width: auto; margin: -4px 0 10px; }
+  .clip-photo { width: 76px; height: 57px; top: -36px; left: 50%; }
+  .note { max-width: none; margin: 0 10px 12px 0; font-size: 20px; -webkit-line-clamp: 3; transform: rotate(-3deg); }
+
+  .stack { height: auto; display: flex; flex-direction: column; }
+  /* Two paper edges behind the card (right and bottom). */
+  .stack::before, .stack::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: -4px;
+    top: 100px;
+    bottom: -5px;
+    z-index: -1;
+    background: var(--paper);
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .14);
+  }
+  .stack::after { left: 12px; right: -8px; top: 108px; bottom: -10px; filter: brightness(.97); }
+  .tabs {
+    order: -1;
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+    pointer-events: auto;
+  }
+  .tab {
+    position: static;
+    width: auto;
+    height: 40px;
+    z-index: auto;
+    border-radius: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, .09);
+    font-size: 11.5px;
+    transform: none !important;
+    animation: none !important;
+  }
+  .tab:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .tab[aria-selected="true"] { box-shadow: 0 3px 8px rgba(0, 0, 0, .18); filter: none; }
+  .tab[aria-selected="false"] { filter: brightness(.94); box-shadow: inset 0 -5px 8px -6px rgba(0, 0, 0, .35); }
+
+  .card:not(.is-front) { display: none; }
+  .card.is-front, .card.is-front.lifting {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    min-height: 240px;
+    z-index: auto;
+    transform: none !important;
+    animation: abCardIn .24s ease both;
+    animation-delay: 0s;
+    will-change: auto;
+  }
+  .card-body {
+    position: static;
+    padding: 22px 18px 24px;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .card-text { font-size: 14.5px; max-width: none; }
+  .dated { grid-template-columns: 96px 1fr; }
+  .hub-handle { font-size: 32px; }
+  /* Mouth 14 px into the card (< 18 px padding): it doesn't bite the title. */
+  .clip-edge { left: -25px; top: 26px; width: 46px; height: 46px; }
+  .clip-cv { right: 18px; top: -8px; width: 48px; height: 36px; }
+
+  .how-card {
+    width: calc(100% - 16px);
+    max-width: 420px;
+    min-height: 120px;
+    max-height: none;
+    margin: 26px 0 0 4px;
+    transform: rotate(1.5deg);
+  }
+  .how-card:hover { transform: rotate(1.5deg); }
+  .how-text { overflow: visible; }
+  .how-text.scrolls { -webkit-mask-image: none; mask-image: none; }
+  .sticker-heart { top: -16px; right: -6px; width: 44px; height: 41px; }
+  .sticker-star { right: -10px; bottom: -22px; width: 52px; height: 52px; }
+}
+@keyframes abCardIn { from { opacity: 0; transform: translateY(8px); } }
+/* Phone (below 600 px): the handle on its own line, the four chips below;
+   9:16 tiles in pairs, photos in threes, collabs full width. */
+@media (max-width: 599px) {
+  .hub-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .hub-platforms { margin-left: 0; }
+  /* Four chips on one line in 302 px: 4 × 64 + 3 × 6. */
+  .hub-chip { min-width: 60px; padding: 7px 4px 5px; }
+  .hub-count { font-size: 12px; }
+  .hub-count span { font-size: 8px; letter-spacing: .04em; }
+  .hub-videos .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hub-photos .hub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hub-collab .hub-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-root * { transition-duration: 0s !important; animation: none !important; }
+}

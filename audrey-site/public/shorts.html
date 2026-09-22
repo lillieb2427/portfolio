@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery — audrey-lillie</title>
+<script>(function(){try{var q=new URLSearchParams(location.search);var t=q.get('theme')||localStorage.getItem('cc_theme');if(q.get('theme'))localStorage.setItem('cc_theme',q.get('theme'));if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="assets/css/site.css?v=2">
+<link rel="icon" href="assets/img/logo-red.png">
+</head>
+<body>
+<main class="shorts-page">
+  <div class="globe-stage" id="globe-stage">
+    <div class="globe" id="globe"></div>
+  </div>
+  <div class="shorts-hint" data-i18n="shorts.hint">DRAG TO EXPLORE · CLICK A SCREEN TO PLAY</div>
+  <div class="shorts-backdrop" id="shorts-backdrop"></div>
+  <div class="shorts-overlay" id="shorts-overlay">
+    <div class="overlay-body"></div>
+    <div class="overlay-screen"></div>
+  </div>
+  <button class="shorts-close" id="shorts-close" data-i18n="shorts.close" type="button">CLOSE ✕</button>
+</main>
+<script src="assets/js/common.js?v=2" defer></script>
+<script src="assets/js/shorts.js?v=2" defer></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* ============ Dividers on phones (YouTube) ============
+   Loaded after site.css: at equal specificity, these rules win.
+   Same breakpoint (860 px) as the phone adjustments in site.css and
+   PHONE_QUERY in dividers.js.
+
+   On desktop the open divider is a showcase: the player fills the height,
+   the role label overlaps its bottom edge, everything fits without
+   scrolling. On phones there isn't enough height (a client with seven
+   projects stacked its tabs down the whole height and crushed the player):
+   the open divider becomes a scrolling page, with the tabs in a single
+   scrolling row, a full-width 16:9 player, the role then the description
+   below, and the cross staying top-right while scrolling. */
+@media (max-width: 860px) {
+  /* Scrolling area: it scrolls, not the document. Content starts at the top
+     (if centered, the beginning would be unreachable once it overflows). */
+  .divider-content {
+    justify-content: flex-start;
+    padding: 8px 12px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .divider-content::-webkit-scrollbar { display: none; }
+  /* Nothing shrinks to fit: whatever overflows scrolls. */
+  .divider-content > * { flex-shrink: 0; }
+
+  /* Cross: in the flow, first, but sticky — it stays at the top of the area
+     while content scrolls beneath (site.css already gives it its 44 px touch
+     target; top: 0 is measured from the area's padding, i.e. 8 px).
+     Negative bottom margin: the tab row, or the panel, moves up to its
+     height; the row leaves room for it on the right. */
+  .divider-close {
+    position: sticky;
+    top: 0;
+    right: auto;
+    align-self: flex-end;
+    margin: 0 0 -44px;
+  }
+
+  /* Project tabs: a single row that scrolls horizontally (like the cover
+     tabs on the Brand shelf), never stacked. Auto margins on the first and
+     last center the row when it fits, without making its start unreachable
+     when it overflows (which justify-content: center would do). The top
+     padding keeps the tabs' shadow; the 56 px sides, symmetric for exact
+     centering, keep the row clear of the cross. */
+  .mini-tabs {
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 6px 56px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mini-tabs::-webkit-scrollbar { display: none; }
+  /* Overflowing row (class set by dividers.js): it starts at the left edge
+     and the tabs fade out on the left and under the cross, hinting there
+     are more. */
+  .mini-tabs.scrolls {
+    padding-left: 12px;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 68px), transparent calc(100% - 14px));
+    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 68px), transparent calc(100% - 14px));
+  }
+  .mini-tab {
+    flex: none;
+    padding: 9px 14px 13px;
+    font-size: 14.5px;
+    max-width: 240px;
+  }
+  .mini-tab:first-child { margin-left: auto; }
+  .mini-tab:last-child { margin-right: auto; }
+  /* Without a tab row the panel sits under the cross: it avoids it. */
+  .divider-close + .player-panel { margin-top: 52px; }
+
+  /* Full-width panel; dividers.js derives the player width from it (16:9). */
+  .player-panel {
+    --panel-pad: 8px;
+    width: 100%;
+    gap: 8px;
+  }
+
+  /* Role label: in the flow under the player, just tilted (dividers.js no
+     longer gives it a translate, and adds the rotation overflow as margin). It
+     may wrap onto two lines rather than being truncated. */
+  .player-role {
+    position: static;
+    bottom: auto;
+    left: auto;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .divider-desc {
+    width: 100%;
+    max-width: none;
+    padding: 0 4px;
+    line-height: 1.45;
+  }
+}

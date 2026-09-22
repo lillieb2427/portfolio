@@ -1,0 +1,690 @@
+{
+  "version": 1,
+  "youtube": {
+    "clients": [
+      {
+        "id": "work-1",
+        "name": "PROJECT ONE",
+        "bg": "#9EA3C4",
+        "text": "#F3D163",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-1-1",
+            "title": "PROJECT ONE",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-2",
+        "name": "CLIENT NAME",
+        "bg": "#EC7448",
+        "text": "#1C2440",
+        "font": "Archivo",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-2-1",
+            "title": "CLIENT NAME",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-3",
+        "name": "CASE STUDY",
+        "bg": "#7DB59E",
+        "text": "#DFEFFB",
+        "font": "Space Grotesk",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-3-1",
+            "title": "CASE STUDY",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-4",
+        "name": "BRAND X",
+        "bg": "#EE6E8C",
+        "text": "#F3D163",
+        "font": "Bebas Neue",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-4-1",
+            "title": "BRAND X",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-5",
+        "name": "SIDE PROJECT",
+        "bg": "#C9A43A",
+        "text": "#1C2440",
+        "font": "Archivo",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-5-1",
+            "title": "SIDE PROJECT",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-6",
+        "name": "COLLAB",
+        "bg": "#9AA5E8",
+        "text": "#1C2440",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-6-1",
+            "title": "COLLAB",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-7",
+        "name": "CAMPAIGN",
+        "bg": "#9AA6AE",
+        "text": "#D63F64",
+        "font": "Bebas Neue",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-7-1",
+            "title": "CAMPAIGN",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-8",
+        "name": "PORTFOLIO 02",
+        "bg": "#B9BD3A",
+        "text": "#1C2440",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-8-1",
+            "title": "PORTFOLIO 02",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-9",
+        "name": "STUDIO WORK",
+        "bg": "#A5AE9A",
+        "text": "#521028",
+        "font": "DM Serif Display",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-9-1",
+            "title": "STUDIO WORK",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "work-10",
+        "name": "SAMPLE",
+        "bg": "#D98EA8",
+        "text": "#E3F1FB",
+        "font": "Archivo",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "work-10-1",
+            "title": "SAMPLE",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      }
+    ]
+  },
+  "brand": {
+    "clients": [
+      {
+        "id": "client-1",
+        "name": "CLIENT A",
+        "bg": "#002e7a",
+        "text": "#ff8647",
+        "font": "Archivo",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-1-1",
+            "title": "CLIENT A",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-2",
+        "name": "BRAND B",
+        "bg": "#3f7a0a",
+        "text": "#ff5fa2",
+        "font": "Bebas Neue",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-2-1",
+            "title": "BRAND B",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-3",
+        "name": "PROJECT C",
+        "bg": "#f7c93c",
+        "text": "#2a6d5c",
+        "font": "Space Mono",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-3-1",
+            "title": "PROJECT C",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-4",
+        "name": "SAMPLE",
+        "bg": "#ffd6e4",
+        "text": "#2a6d5c",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-4-1",
+            "title": "SAMPLE",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-5",
+        "name": "CASE STUDY D",
+        "bg": "#461052",
+        "text": "#f3d163",
+        "font": "Bebas Neue",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-5-1",
+            "title": "CASE STUDY D",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-6",
+        "name": "CLIENT E",
+        "bg": "#fff6b8",
+        "text": "#1f4fd8",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-6-1",
+            "title": "CLIENT E",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-7",
+        "name": "BRAND F",
+        "bg": "#a9c6ff",
+        "text": "#e8a13a",
+        "font": "Archivo",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-7-1",
+            "title": "BRAND F",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      },
+      {
+        "id": "client-8",
+        "name": "STUDIO G",
+        "bg": "#d9c6ff",
+        "text": "#4f9a1e",
+        "font": "Anton",
+        "finish": "",
+        "desc": "",
+        "desc_en": "",
+        "projects": [
+          {
+            "id": "client-8-1",
+            "title": "STUDIO G",
+            "title_en": "",
+            "url": "",
+            "role": "",
+            "role_en": "",
+            "desc": "",
+            "desc_en": "",
+            "bg": "",
+            "text": "",
+            "font": "",
+            "format": "",
+            "photos": []
+          }
+        ]
+      }
+    ]
+  },
+  "shorts": {
+    "ratio": "portrait",
+    "items": [
+      {
+        "id": "gal-1",
+        "title": "REEL ONE",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#9EA3C4",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-2",
+        "title": "REEL TWO",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#EC7448",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-3",
+        "title": "REEL THREE",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#7DB59E",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-4",
+        "title": "REEL FOUR",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#EE6E8C",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-5",
+        "title": "REEL FIVE",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#C9A43A",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-6",
+        "title": "REEL SIX",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#9AA5E8",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-7",
+        "title": "REEL SEVEN",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#9AA6AE",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      },
+      {
+        "id": "gal-8",
+        "title": "REEL EIGHT",
+        "title_en": "",
+        "role": "",
+        "role_en": "",
+        "url": "",
+        "cover": "",
+        "bg": "#B9BD3A",
+        "text": "#FFFFFF",
+        "font": "Anton"
+      }
+    ]
+  },
+  "fonts": {
+    "custom": []
+  },
+  "about": {
+    "photo": "assets/img/audrey-about.jpg",
+    "name": "audrey-lillie",
+    "title": "GRAPHIC DESIGNER / FOR COOL IDEAS",
+    "title_en": "",
+    "stamp": "LET'S WORK TOGETHER",
+    "stamp_en": "",
+    "note": "",
+    "note_en": "",
+    "cards": {
+      "desc": {
+        "label": "WHO AM I??",
+        "text": "Hello, I'm Audrey-Lillie. I'm 21, a Sagittarius ᯓ★\n\nI'm passionate about the virtual world, content creation, fashion, pop culture, journaling, sudoku, and much more... but you'll find that out working alongside me!\n\nI'm a one-stop shop for creating all kinds of content. From designing eye-catching graphics, creating compelling marketing materials, or collaborating on creative campaigns, I thrive in environments that encourage innovation, I love talking strategy, understanding the essence of what you do, and developing together content that truly feels like you.",
+        "label_en": "",
+        "text_en": ""
+      },
+      "cv": {
+        "label": "EXPERIENCE",
+        "text": "2026 — present — Social Media and Outreach Intern, Holistic House and Community Healing Foundation\n\n2025 — 2026 — Public Relations Chair, F.A.C.E. Modelling - Rutgers University\nProduced 25+ original graphics and Reels for the club’s Instagram, driving event promotion and membership visibility. Served as a primary point of contact between club leadership and members, managing communications and inquiries through direct outreach..\n\n2025 — present — Head Graphic Designer, SCRAPS Magazine\nOversee all editorial and production operations for a student-run print magazine, delivering 3 issues from concept to final output. Art-direct and design all visual elements — layouts, typography, and photo treatments — across every issue, while leading a creative team of 10 contributors across editing, photography, and design. Organize and direct photo shoots, managing creative vision, talent coordination, and on-set logistics.",
+        "label_en": "",
+        "text_en": ""
+      },
+      "edu": {
+        "label": "EDUCATION",
+        "text": "2023 — 2027 — BFA Graphic Design, Rutgers University - New brunswick, NJ\n\n2019 — 2023 — High School Diploma, The Lawrenceville School - Lawrenceville, NJ",
+        "label_en": "",
+        "text_en": ""
+      },
+      "hobbies": {
+        "label": "HOBBIES",
+        "text": "a list of things I love:\n\n- shopping\n- fashion\n- journaling\n- sudoku\n- modeling\n- playing minecraft",
+        "label_en": "",
+        "text_en": ""
+      },
+      "content": {
+        "label": "CONTENT CREATION",
+        "text": "I also make content on my own channels. Come say hi ✧",
+        "label_en": "",
+        "text_en": ""
+      }
+    },
+    "how": "",
+    "how_en": "",
+    "photos": [],
+    "fonts": {
+      "type": "",
+      "body": "",
+      "hand": ""
+    },
+    "social": {
+      "handle": "@audreylilliee",
+      "platforms": [
+        {
+          "kind": "instagram",
+          "url": "https://instagram.com/audreylilliee",
+          "followers": ""
+        },
+        {
+          "kind": "tiktok",
+          "url": "https://tiktok.com/@audreylils",
+          "followers": ""
+        },
+        {
+          "kind": "twitch",
+          "url": "",
+          "followers": ""
+        },
+        {
+          "kind": "youtube",
+          "url": "https://youtube.com/@aureylils",
+          "followers": ""
+        }
+      ],
+      "videos": [],
+      "collabs": [],
+      "photos": []
+    }
+  },
+  "contact": {
+    "photo": "assets/img/audrey-contact.jpg",
+    "first": "Audrey-Lillie",
+    "last": "BING",
+    "title": "OPEN TO FREELANCE",
+    "title_en": "",
+    "email": "audreylilliebing@gmail.com",
+    "phone": "+1 (609) 532-2578",
+    "note": "DM friendly :). ₊˚ ☎︎₊˚✧ ﾟ.",
+    "note_en": ""
+  }
+}

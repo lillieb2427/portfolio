@@ -1,0 +1,1197 @@
+/* ============ Base / themes ============ */
+:root {
+  /* Star cursors: black by default, red over anything clickable. */
+  --cursor-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='-1.5 -1.5 27 27'%3E%3Cpath d='M12 1.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L1.9 8.8l7.1-.7z' fill='%23171717' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, auto;
+  --cursor-star-link: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='-1.5 -1.5 27 27'%3E%3Cpath d='M12 1.5l2.9 6.6 7.1.7-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L1.9 8.8l7.1-.7z' fill='%23ff0000' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, pointer;
+  --bg: #fafaf7;
+  --ink: #171717;
+  --muted: #8a8a86;
+  --chrome-h: 96px;
+  /* Length of one full cycle of the home animation loop.
+     Every animated piece shares this duration to stay in sync. */
+  --loop: 3.6s;
+  color-scheme: light;
+}
+html { cursor: var(--cursor-star); }
+a[href], button, [role="button"], label, summary, select { cursor: var(--cursor-star-link); }
+html[data-theme="dark"] {
+  --bg: #131316;
+  --ink: #f2f2ef;
+  --muted: #7d7d84;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+/* ============ Shared header ============ */
+.site-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--chrome-h);
+  z-index: 90;
+  pointer-events: none;
+  /* The red outlines overflow by 16 px around each item: on a phone, the last
+     button's outline would go off-screen and make the page scroll sideways. */
+  overflow: clip;
+}
+.site-header a,
+.site-header button { pointer-events: auto; }
+
+.site-nav {
+  position: absolute;
+  top: 34px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  white-space: nowrap;
+}
+.nav-item {
+  position: relative;
+  display: inline-block;
+  padding: 8px 6px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.nav-item { transition: color 0.2s ease; }
+.nav-item:hover,
+.nav-item:focus-visible { color: #ff0000; }
+
+/* "Contact me" is a button (it opens the badge without changing page) but
+   must blend in with the menu links. */
+button.nav-item {
+  background: none;
+  border: 0;
+  margin: 0;
+  font-family: inherit;
+  line-height: normal;
+  cursor: var(--cursor-star-link);
+}
+
+/* ============ Fixed controls (language + theme) ============ */
+.site-controls {
+  position: fixed;
+  top: 20px; right: 24px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* The flags' white areas are transparent in the PNGs: on a dark background
+   they took the background color (blue, red, black). An opaque white
+   rectangle behind them, in both themes, restores their true colors. The flag
+   itself stays 30 × 21 px; the rectangle adds 2 px around it. */
+.flag-btn {
+  width: 34px; height: 25px;
+  padding: 2px;
+  border: none;
+  background: #fff;
+  border-radius: 3px;
+  cursor: var(--cursor-star-link);
+  opacity: 0.4;
+  transition: opacity 0.25s ease, transform 0.15s ease;
+  display: block;
+}
+.flag-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.flag-btn:hover { opacity: 0.8; transform: scale(1.1); }
+.flag-btn.active { opacity: 1; }
+.theme-btn {
+  width: 28px; height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: var(--cursor-star-link);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.theme-btn:hover { transform: scale(1.15) rotate(12deg); }
+.theme-btn svg { width: 20px; height: 20px; }
+.icon-moon { display: none; }
+html[data-theme="dark"] .icon-sun { display: none; }
+html[data-theme="dark"] .icon-moon { display: block; }
+
+/* ============ Back to home (logo, top left) ============
+   Mirrors the controls on the right; common.js doesn't add it on the landing.
+   The logo PNG has lots of white around the word: at 34 px tall, the word
+   itself is ~15 px, matching the neighbouring icons. */
+.home-btn {
+  position: fixed;
+  top: 20px; left: 24px;
+  z-index: 200;
+  display: block;
+  height: 34px;
+  transition: transform 0.2s ease;
+}
+.home-btn img { height: 100%; width: auto; display: block; }
+.home-btn:hover { transform: scale(1.08); }
+/* The logo is black: in dark mode it is inverted rather than loading a
+   second image. */
+html[data-theme="dark"] .home-btn img { filter: invert(1); }
+
+@media (max-width: 860px) {
+  :root { --chrome-h: 132px; }
+  .site-nav { top: 74px; gap: 12px; }
+  .nav-item { font-size: 12.5px; padding: 6px 3px; }
+  .site-controls { top: 14px; right: 14px; }
+  .home-btn { top: 14px; left: 14px; }
+}
+
+/* ============ Homepage ============ */
+.home-root {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.home-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 0 40px;
+  text-align: center;
+}
+.home-title {
+  margin: 0;
+  font-size: min(15vw, 220px);
+  line-height: 0.92;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  position: relative;
+  display: inline-block;
+}
+.home-title .letter {
+  display: inline-block;
+  will-change: transform;
+}
+.home-title .word {
+  display: inline-block;
+  position: relative;
+}
+/* The exclamation mark is anchored to the last word: it stays at the bottom
+   of the R, whether "FOR" ends a line (desktop) or has its own (phone). */
+.home-title .excla {
+  position: absolute;
+  bottom: -31%;
+  right: -25%;
+  height: 128%;
+  width: auto;
+  pointer-events: none;
+  will-change: transform;
+}
+.home-script {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(72vw, 1056px);
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+}
+.home-stars {
+  position: absolute;
+  bottom: 71px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.home-star {
+  display: inline-flex;
+  color: var(--ink);
+  will-change: transform;
+  transition: color 0.2s ease;
+}
+.home-star:hover { animation: none !important; color: #ff0000; }
+
+/* --- Entrance: the page starts bare, each element arrives in turn --- */
+html.intro .home-title .letter,
+html.intro .home-title .excla,
+html.intro .home-script,
+html.intro .home-star,
+html.intro .site-header,
+html.intro .site-controls {
+  opacity: 0;
+}
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(26px) scale(0.94); filter: blur(9px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes exclaIn {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-16deg); }
+  70%  { opacity: 1; transform: scale(1.08) rotate(3deg); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes scriptIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(1.06); filter: blur(10px); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0); }
+}
+@keyframes starIn {
+  0%   { opacity: 0; transform: scale(0.3) translateY(12px); }
+  65%  { opacity: 1; transform: scale(1.18) translateY(0); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes chromeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+html.playing .home-title .letter {
+  animation: letterIn 0.65s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+html.playing .home-title .excla {
+  animation: exclaIn 0.6s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+html.playing .home-script {
+  animation: scriptIn 0.8s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+html.playing .home-star {
+  animation: starIn 0.55s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+html.playing .site-header,
+html.playing .site-controls {
+  animation: chromeIn 0.7s ease both;
+}
+
+/* --- Loop: letters, then the exclamation mark, then the stars --- */
+@keyframes letterBump {
+  0%, 12%, 100% { transform: translateY(0); }
+  6%            { transform: translateY(-9px); }
+}
+@keyframes exclaBump {
+  0%, 14%, 100% { transform: translateY(0) rotate(0deg); }
+  7%            { transform: translateY(-11px) rotate(-4deg); }
+}
+@keyframes starBump {
+  0%, 16%, 100% { transform: translateY(0); }
+  8%            { transform: translateY(-10px); }
+}
+html.loaded .home-title .letter { animation: letterBump var(--loop) ease-in-out infinite; }
+html.loaded .home-title .excla  { animation: exclaBump  var(--loop) ease-in-out infinite; }
+html.loaded .home-star          { animation: starBump   var(--loop) ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.intro .home-title .letter,
+  html.intro .home-title .excla,
+  html.intro .home-script,
+  html.intro .home-star,
+  html.intro .site-header,
+  html.intro .site-controls { opacity: 1; }
+  html.playing .home-title .letter,
+  html.playing .home-title .excla,
+  html.playing .home-script,
+  html.playing .home-star,
+  html.playing .site-header,
+  html.playing .site-controls,
+  html.loaded .home-title .letter,
+  html.loaded .home-title .excla,
+  html.loaded .home-star { animation: none; }
+}
+
+/* ============ Dividers (YouTube / Brand) ============ */
+.divider-page {
+  min-height: 100vh;
+  min-height: 100svh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(var(--chrome-h) + 64px);
+  /* Clips decorative overflow (large titles, tilted sheets) without stopping
+     the page from growing: beyond 10 clients the document scrolls, not an
+     inner container. */
+  overflow: clip;
+}
+.dividers-wrap {
+  flex: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.divider-slot {
+  position: relative;
+  flex-basis: 0;
+  flex-shrink: 0;
+  min-height: 0;
+  transition: flex-grow 0.5s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+.divider-sheet {
+  position: absolute;
+  left: -10px; right: -10px;
+  border-radius: 3px;
+  border: 1.5px solid #ffffff;
+  cursor: var(--cursor-star-link);
+  transition: top 0.2s ease, bottom 0.2s ease, box-shadow 0.3s ease;
+}
+.divider-tab {
+  position: absolute;
+  border: 1.5px solid #ffffff;
+  border-bottom: none;
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: 0.06em;
+  cursor: var(--cursor-star-link);
+  overflow: hidden;
+  padding: 0 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.divider-toptitle {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: clamp(60px, 16vw, 230px);
+  line-height: 1;
+  cursor: var(--cursor-star-link);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.divider-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  pointer-events: none;
+}
+/* The player block fills the open divider's full height and deliberately
+   covers the client's large title behind it. */
+.divider-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* No effect when the panel fills the height; on narrow screens, where the
+     16:9 is limited by width, it is centered rather than stuck to the top. */
+  justify-content: center;
+  padding: clamp(6px, 1.6vh, 20px) 16px clamp(8px, 1.8vh, 22px);
+  animation: fadeIn 0.4s ease;
+  pointer-events: auto;
+}
+/* Close cross of the open divider: a badge of the same material as the
+   panel (client color 10% darker plus texture, set by dividers.js), above the
+   panel and the role label. Placed in .divider-content, so inside the area
+   clipped by .divider-clip: never cut off. */
+.divider-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  z-index: 4;
+  width: 34px; height: 34px;
+  padding: 0;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  font: 700 15px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: var(--cursor-star-link);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.divider-close:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+/* Project tabs: fused to the panel, but behind it in depth. */
+.mini-tabs {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: -6px;
+  max-width: 100%;
+}
+.mini-tab {
+  border: 1.5px solid #ffffff;
+  border-bottom: none;
+  padding: 12px 24px 17px;
+  font-size: 19.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: var(--cursor-star-link);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+  transform: translateY(5px);
+  /* Inner shadow: the inactive tab looks pushed in behind the panel, with no
+     transparency (the large title must not show through) or hue change. */
+  box-shadow: inset 0 -7px 11px -7px rgba(0, 0, 0, 0.45), 0 -2px 5px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-tab:hover { transform: translateY(2px); }
+/* The active tab is flush with the panel: no dip, a stronger drop shadow. */
+.mini-tab.active {
+  transform: translateY(0);
+  box-shadow: 0 -5px 12px rgba(0, 0, 0, 0.2);
+}
+/* Textured rectangle, same material as the divider but 10% darker. It
+   fills the available height; its width follows from the player's 16:9. */
+.player-panel {
+  --panel-pad: clamp(8px, 1.5vh, 16px);
+  position: relative;
+  z-index: 2;
+  /* The panel wraps its content; dividers.js sizes the player in pixels so it
+     fills the divider's height while keeping 16:9 (flex + aspect-ratio +
+     fit-content form a circular dependency). */
+  flex: none;
+  width: fit-content;
+  max-width: 100%;
+  border: 1.5px solid #ffffff;
+  border-radius: 3px;
+  padding: var(--panel-pad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+}
+.divider-player {
+  flex: none;
+  aspect-ratio: 16 / 9;
+  background: #101013;
+  border: 2px solid #000;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.divider-player iframe,
+.divider-player video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.player-placeholder {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 12px;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+/* Large role label, set askew near the bottom of the player. Always tilted
+   10°, with direction and horizontal position randomized per project;
+   dividers.js then adjusts `bottom` and `left` so it fits in the divider
+   whatever the text length. */
+.player-role {
+  position: absolute;
+  z-index: 3;
+  bottom: var(--panel-pad);
+  margin: 0;
+  padding: 15px 36px 20px;
+  font-size: clamp(24px, 4.2vh, 51px);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* Bounded by the window, not the panel: its natural size must be known
+     before sizing the player, which in turn determines the panel. */
+  max-width: 76vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1.5px solid #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+  pointer-events: none;
+}
+.divider-desc {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+  max-width: 620px;
+  text-align: center;
+}
+.mini-title {
+  flex: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* ============ Shorts (video globe) ============ */
+:root { --tile-frame: #ffffff; }
+html[data-theme="dark"] { --tile-frame: #2a2a30; }
+.shorts-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.shorts-hint {
+  position: fixed;
+  bottom: 26px; right: 34px;
+  z-index: 5;
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+/* Stage: the whole area below the header. The globe is centered in it. */
+.globe-stage {
+  position: absolute;
+  top: var(--chrome-h); left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  cursor: var(--cursor-star-link);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+.globe-stage.grabbing { cursor: var(--cursor-star-link); }
+.globe-stage.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: var(--cursor-star);
+}
+.globe {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 0; height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+/* A screen: tangent to the sphere (transform computed by JS). The back face
+   is hidden, and only screens facing the visitor (.front) respond to the
+   pointer. */
+.tile {
+  position: absolute;
+  left: 0; top: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  pointer-events: none;
+  outline: none;
+}
+.tile.front { pointer-events: auto; cursor: var(--cursor-star-link); }
+.tile-inner {
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--tile-frame);
+  box-shadow: 0 10px 24px -12px rgba(20, 20, 25, 0.5), 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.24, 1), box-shadow 0.28s ease;
+}
+.tile.front:hover .tile-inner,
+.tile:focus-visible .tile-inner {
+  transform: scale(1.08);
+  box-shadow: 0 18px 34px -14px rgba(20, 20, 25, 0.55), 0 2px 4px rgba(0, 0, 0, 0.14);
+}
+/* Thumbnail (shared with the admin preview): a colored card with the title,
+   covered by the image once it loads. */
+.thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.thumb-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6%;
+  text-align: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+  overflow: hidden;
+}
+.thumb img,
+.thumb video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+.thumb.has-media img,
+.thumb.has-media video { opacity: 1; }
+/* Short title, revealed on hover over the image (dark veil at the bottom).
+   Without an image, the colored card already shows the title: the label is
+   hidden. */
+.tile-label {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 28% 6% 7%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.45) 55%, transparent);
+  z-index: 2;   /* the image, inserted later (async thumbnail), goes underneath */
+  color: #fff;
+  font-size: clamp(10px, 11cqw, 16px);
+  font-weight: 800;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-wrap: balance;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+}
+.tile-label .tile-role {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+.thumb:not(.has-media) .tile-label { display: none; }
+/* Role (art director, project lead…): tilted label straddling the bottom of
+   the player, in the video's colors and font. */
+.overlay-role {
+  position: absolute;
+  bottom: 0; left: 50%;
+  z-index: 5;
+  margin: 0;
+  padding: 8px 16px;
+  border: 2px solid var(--tile-frame);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+.tile.front:hover .tile-label,
+.tile:focus-visible .tile-label { opacity: 1; transform: none; }
+/* Notch of the vertical (phone) player */
+.phone-notch {
+  position: absolute;
+  top: 11px; left: 50%;
+  transform: translateX(-50%);
+  width: 31%;
+  height: clamp(6px, 1.4vh, 13px);
+  border-radius: 9px;
+  background: #000;
+  z-index: 3;
+}
+/* Player overlay (veil shared with the Contact badge) */
+.shorts-backdrop,
+.contact-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.5s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
+}
+.shorts-backdrop.on,
+.contact-backdrop.on {
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: auto;
+}
+.shorts-overlay {
+  position: fixed;
+  z-index: 140;
+  display: none;
+  transform-origin: 50% 50%;
+  transition: transform 0.62s cubic-bezier(0.22, 0.9, 0.24, 1);
+  pointer-events: none;
+}
+.shorts-overlay.open { display: block; }
+.overlay-body {
+  position: absolute;
+  inset: 0;
+  border-radius: clamp(16px, 4vh, 36px);
+  background: #0c0c0f;
+  box-shadow: 0 60px 90px -40px rgba(20, 20, 25, 0.6), inset 0 0 0 1.5px rgba(255, 255, 255, 0.18);
+}
+.overlay-screen {
+  position: absolute;
+  inset: clamp(3px, 0.9vh, 8px);
+  border-radius: clamp(13px, 3.2vh, 29px);
+  overflow: hidden;
+  container-type: inline-size;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+.overlay-screen iframe,
+.overlay-screen video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.overlay-title {
+  position: absolute;
+  top: 40px; left: 0; right: 0;
+  padding: 0 5cqw;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  z-index: 2;
+  pointer-events: none;
+}
+.shorts-close {
+  position: fixed;
+  z-index: 150;
+  top: 74px; right: 34px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--ink);
+  cursor: var(--cursor-star-link);
+  opacity: 0;
+  transition: opacity 0.4s ease 0.15s;
+  pointer-events: none;
+  background: none;
+  border: none;
+  padding: 6px;
+}
+.shorts-close.on { opacity: 1; pointer-events: auto; }
+
+/* ============ Contact: overlay badge holder ============
+   Opened from the menu, over the current page (blurred veil like the globe
+   player). Chrome clip, chain and charms in inline SVG; translucent plastic
+   holder and white card in CSS. Everything hangs from a single point (the
+   top of the tab) and swings on open. A light object in both themes: its
+   colors are fixed, not the site's. */
+/* ---------- Maintenance ---------- */
+/* Full-screen opaque overlay above everything (chrome, overlays): the page
+   below is neither visible nor reachable. */
+html.is-maintenance, html.is-maintenance body { overflow: hidden; }
+.maint-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg, #fafaf5);
+}
+.maint-bubble {
+  position: relative;
+  max-width: 420px;
+  padding: 26px 30px 24px;
+  border: 1.5px solid currentColor;
+  border-radius: 26px;
+  background: var(--bg, #fafaf5);
+  color: var(--ink, #15151a);
+  text-align: center;
+  box-shadow: 6px 8px 0 currentColor;
+  animation: maintIn .5s cubic-bezier(.34, 1.3, .64, 1) both;
+}
+/* Bubble tail. */
+.maint-bubble::after {
+  content: '';
+  position: absolute;
+  left: 44px; bottom: -13px;
+  width: 22px; height: 22px;
+  background: inherit;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) skew(12deg, 12deg);
+}
+.maint-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: #d63f64;
+  animation: maintPulse 1.6s ease-in-out infinite;
+}
+.maint-title {
+  margin: 0 0 8px;
+  font: 700 22px/1.15 'IBM Plex Mono', monospace;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.maint-text { margin: 0; font-size: 15px; line-height: 1.5; opacity: .8; }
+@keyframes maintIn { from { opacity: 0; transform: translateY(14px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes maintPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+/* Admin preview during maintenance: just a reminder, the page stays usable. */
+.maint-badge {
+  position: fixed;
+  left: 50%; bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 9998;
+  max-width: calc(100vw - 24px);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #d63f64;
+  color: #fff;
+  font: 600 12px/1.3 'IBM Plex Mono', monospace;
+  text-align: center;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .maint-bubble, .maint-dot { animation: none; } }
+
+.contact-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  /* Holder width: nearly the full screen on phones, 440 px max, and less if
+     the screen is short (landscape phone): clip 134 px + holder 0.7 × width
+     must fit in the height. */
+  --bw: min(92vw, 440px, calc((100vh - 170px) / 0.7));
+}
+.contact-overlay.open { display: flex; }
+.contact-overlay.in { opacity: 1; }
+.contact-swing {
+  position: relative;
+  width: var(--bw);
+  transform-origin: 50% 0;
+  pointer-events: auto;
+  outline: none;
+}
+/* Entrance: the badge drops on its chain and swings, a one-second damped
+   pendulum, then stays still. The free-hanging chain follows with a slight
+   lag (counter-rotation). */
+.contact-overlay.in .contact-swing {
+  animation: contactDrop 1.1s cubic-bezier(0.3, 0.7, 0.3, 1) both,
+             contactIdleBadge 5.2s ease-in-out 1.1s infinite;
+}
+/* The charms never quite stop: after landing, a continuous low-amplitude
+   sway. */
+.contact-overlay.in .contact-chain {
+  animation: contactSway 1.3s ease-out 0.05s both,
+             contactIdle 3.4s ease-in-out 1.35s infinite;
+}
+@keyframes contactIdle {
+  0%, 100% { transform: rotate(-2.4deg); }
+  50%      { transform: rotate(2.4deg); }
+}
+@keyframes contactIdleBadge {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50%      { transform: rotate(0.6deg); }
+}
+@keyframes contactDrop {
+  0%   { transform: translateY(-70px) rotate(-9deg); opacity: 0; }
+  18%  { opacity: 1; }
+  32%  { transform: translateY(0) rotate(6deg); }
+  56%  { transform: rotate(-3.5deg); }
+  78%  { transform: rotate(1.5deg); }
+  100% { transform: none; }
+}
+@keyframes contactSway {
+  0%   { transform: rotate(10deg); }
+  30%  { transform: rotate(-8deg); }
+  55%  { transform: rotate(4deg); }
+  78%  { transform: rotate(-1.5deg); }
+  100% { transform: none; }
+}
+.contact-clip {
+  display: block;
+  margin: 0 auto;
+  width: 160px;
+  height: 134px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.3));
+}
+/* Hung from the ring (center 66 px from the top), over the holder. */
+.contact-chain {
+  position: absolute;
+  top: 66px;
+  left: calc(50% - 50px);
+  width: 100px;
+  height: 150px;
+  z-index: 3;
+  transform-origin: 41px 9px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+/* Plastic holder: transparent white gradients, edge, drop shadow. Rises
+   22 px under the clip: the snap hook's bar passes through the slot. */
+.contact-holder {
+  position: relative;
+  z-index: 2;
+  width: var(--bw);
+  height: calc(var(--bw) * 0.82);   /* tall enough for the large photo and enlarged text */
+  margin-top: -22px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.28) 35%, rgba(255, 255, 255, 0.12) 55%, rgba(255, 255, 255, 0.4) 100%);
+  border: 1px solid rgba(90, 95, 105, 0.5);
+  box-shadow: 0 34px 60px -24px rgba(0, 0, 0, 0.5), 0 8px 18px -8px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.7), inset 0 0 22px rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+.contact-slot {
+  position: absolute;
+  top: 9px; left: 50%;
+  width: 66px; height: 9px;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  background: rgba(30, 32, 38, 0.5);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+.contact-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(118deg, transparent 28%, rgba(255, 255, 255, 0.5) 40%, rgba(255, 255, 255, 0.12) 47%, transparent 56%);
+}
+/* White card slipped into the holder, under the slot strip. */
+.contact-card {
+  position: absolute;
+  left: 12px; right: 12px; top: 44px; bottom: 12px;
+  background: #fff;
+  color: #171717;
+  border-radius: 8px;
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  container-type: inline-size;
+}
+.contact-card [hidden] { display: none; }
+/* "Mugshot" nod: a height chart, fine graduated lines behind the photo. */
+.contact-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 40px; bottom: 0;
+  width: 124px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(23, 23, 23, 0.28) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(to bottom, rgba(23, 23, 23, 0.1) 0 1px, transparent 1px 12px);
+  background-size: 16px 100%, 100% 100%;
+  background-repeat: no-repeat;
+}
+.contact-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  height: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e6e6e2;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #8a8a86;
+}
+.contact-id { color: #171717; }
+.contact-body {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex: 1;
+  min-height: 0;
+  padding-top: 12px;
+}
+.contact-photo {
+  position: relative;
+  flex: none;
+  width: 176px; height: 176px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ececea;
+  box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.contact-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.contact-photo svg { display: block; width: 100%; height: 100%; fill: #bdbdb8; }
+.contact-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.contact-name {
+  margin: 0;
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: clamp(22px, 8.6cqw, 34px);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: #171717;
+  overflow-wrap: anywhere;
+}
+.contact-last { text-transform: uppercase; }
+.contact-title {
+  margin: 4px 0 8px;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: #8a8a86;
+}
+/* Contact lines span the full width of the white area. */
+.contact-email,
+.contact-phone {
+  display: block;
+  width: 100%;
+  color: #171717;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(23, 23, 23, 0.35);
+  overflow-wrap: anywhere;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.contact-email:hover,
+.contact-phone:hover { color: #ff0000; border-color: #ff0000; }
+/* The e-mail stays on one line: common.js shrinks it until it fits. */
+.contact-email { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal; }
+.contact-note {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.35;
+  color: #8a8a86;
+}
+@media (max-width: 480px) {
+  /* Taller holder and smaller photo: at 358 px wide, the text column keeps
+     ~190 px and every line fits. */
+  .contact-holder { height: calc(var(--bw) * 1.02); }
+  .contact-photo { width: 124px; height: 124px; }
+  .contact-name { font-size: clamp(20px, 8cqw, 27px); }
+  .contact-title { font-size: 11px; }
+  .contact-email,
+  .contact-phone { font-size: 15px; }
+  .contact-note { font-size: 12.5px; }
+}
+@media (max-width: 860px) {
+  /* Below the menu line (which moves to 74 px on phones). */
+  .contact-close { top: 112px; right: 14px; }
+}
+@media (max-height: 520px) {
+  /* Landscape phone: the holder is shrunk by the height, the card tightens
+     (smaller photo, no note) to stay readable. */
+  .contact-photo { width: 64px; height: 64px; }
+  .contact-name { font-size: clamp(16px, 5.5cqw, 20px); }
+  .contact-title { margin: 0 0 4px; }
+  .contact-email,
+  .contact-phone { font-size: 13px; line-height: 1.35; }
+  .contact-note { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-overlay.in .contact-swing,
+  .contact-overlay.in .contact-chain { animation: none; }
+  .contact-overlay,
+  .contact-backdrop { transition: none; }
+}
+
+/* ============ About ============ */
+.about-root {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--chrome-h) 24px 60px;
+}
+.about-placeholder {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+/* ============ Phone adjustments ============
+   Placed at the end of the sheet: at equal specificity, these rules must win
+   over the base definitions declared above. */
+@media (max-width: 860px) {
+  /* One word per line, one and a half times larger. */
+  .home-title { font-size: min(22.5vw, 220px); }
+  .home-title br { display: none; }
+  .home-title .line { display: block; }
+  .home-title .word {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+  }
+  .home-title .letter.space { display: none; }
+  .home-center { padding: 0 16px; }
+
+  /* More compact divider tabs: JS shrinks them on narrow screens, so the
+     text must follow. */
+  .divider-tab { font-size: 15px; letter-spacing: 0.04em; padding: 0 8px; }
+
+  /* Role label one and a half times smaller. */
+  .player-role {
+    font-size: clamp(16px, 2.8vh, 34px);
+    padding: 10px 24px 13px;
+  }
+
+  /* Close cross at finger size (44 px), a bit closer to the corner. */
+  .divider-close {
+    top: 8px; right: 8px;
+    width: 44px; height: 44px;
+    font-size: 18px;
+  }
+}
